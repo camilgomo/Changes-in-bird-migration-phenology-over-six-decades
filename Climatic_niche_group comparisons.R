@@ -1,9 +1,15 @@
+## Climatic niche group comparisons and randomization
+## Changes in bird migration phenology over six decades: a perspective from the Neotropical non-breeding grounds
+## Script by Camila Gomez
+
+#load packages
 library(dplyr)
 library(ggplot2)
-
-dat <- read.csv("C:\\Users\\camil\\OneDrive - SELVA Investigación para la conservación en el neotropico\\Documentos\\Camila\\Publicaciones\\Historical migration Phenology\\Niche_Overla_All_Groups.csv", sep = ";", h = T)
+#get the data set. Overlaping niche values for each pair species comparison.  
+dat <- read.csv("..\\Niche_Overla_All_Groups.csv", sep = ";", h = T)
 head(dat)
 
+#create the graphs
 p <- ggplot(dat, aes(x= Class, y= D, fill = Period)) + 
   geom_boxplot(outlier.shape = NA)+ 
   geom_jitter(colour = "black") +
