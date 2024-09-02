@@ -1,0 +1,101 @@
+library(car)
+library(dplyr)
+
+#PREPARE THE DATA
+##Load data
+data <- read.table("all_data50.txt", h = T)
+
+##Create a subset for historical records and omit NAs if necessary
+hist_records <- subset(data, period == "historical")
+hist_records <- na.omit(hist_records)
+
+##Create a subset for modern records
+mod_records <- subset(data, period == "modern")
+
+#TEMPORAL BIAS
+##Group historical and modern subsets by year and create a column in main dataframe
+hist_records <- hist_records %>% group_by(YEAR) %>% 
+  mutate(count_year_occurr = n())
+
+mod_records <- mod_records %>% group_by(YEAR) %>% 
+  mutate(count_year_occurr = n())
+
+##Build a dataframe for counts by year 
+hist_year_df <- hist_records %>%
+  select(YEAR, count_year_occurr) %>%
+  distinct()
+
+mod_year_df <- mod_records %>%
+  select(YEAR, count_year_occurr) %>%
+  distinct()
+
+##Linear model
+model_year_hist <- lm(count_year_occurr ~ YEAR, data = hist_year_df)
+summary(model_year_hist)
+
+model_year_mod <- lm(count_year_occurr ~ YEAR, data = mod_year_df)
+summary(model_year_mod)
+
+#Execute Durbin-Watson Test for bias in the data
+durbinWatsonTest(model_year_hist)
+durbinWatsonTest(model_year_mod)
+
+
+#LATITUDE BIAS
+##Group historical and modern subsets by latitude and create a column in main dataframe
+hist_records <- hist_records %>% group_by(LATITUDE) %>% 
+  mutate(count_lat_occurr = n())
+
+mod_records <- mod_records %>% group_by(LATITUDE) %>% 
+  mutate(count_lat_occurr = n())
+
+##Build a dataframe for counts by latitude 
+hist_lat_df <- hist_records %>%
+  select(LATITUDE, count_lat_occurr) %>%
+  distinct()
+
+
+mod_lat_df <- mod_records %>%
+  select(LATITUDE, count_lat_occurr) %>%
+  distinct()
+
+##Linear model
+model_lat_hist <- lm(count_lat_occurr ~ LATITUDE, data = hist_lat_df)
+summary(model_lat_hist)
+
+model_lat_mod <- lm(count_lat_occurr ~ LATITUDE, data = mod_lat_df)
+summary(model_lat_mod)
+
+##Execute Durbin-Watson Test for bias in the data
+durbinWatsonTest(model_lat_hist)
+durbinWatsonTest(model_lat_mod)
+
+
+#LONGITUDE BIAS
+##Group historical and modern subsets by latitude and create a column in main dataframe
+hist_records <- hist_records %>% group_by(LONGITUDE) %>% 
+  mutate(count_lon_occurr = n())
+
+mod_records <- mod_records %>% group_by(LONGITUDE) %>% 
+  mutate(count_lon_occurr = n())
+
+##Create a dataframe for counts by longitude
+hist_lon_df <- hist_records %>%
+  select(LONGITUDE, count_lon_occurr) %>%
+  distinct()
+
+
+mod_lon_df <- mod_records %>%
+  select(LONGITUDE, count_lon_occurr) %>%
+  distinct()
+
+##Linear model
+model_lon_hist <- lm(count_lon_occurr ~ LONGITUDE, data = hist_lon_df)
+summary(model_lon_hist)
+
+model_lon_mod <- lm(count_lon_occurr ~ LONGITUDE, data = mod_lon_df)
+summary(model_lon_mod)
+
+##Execute Durbin-Watson Test for bias in the data
+durbinWatsonTest(model_lon_hist)
+durbinWatsonTest(model_lon_mod)
